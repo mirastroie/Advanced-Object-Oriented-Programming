@@ -21,5 +21,5 @@ Actions/Methods:
 - [x] EmployeeService: addEmployee, showEmployees
 - [x] EventService: addEvent, showEvents, searchEvents(by a given venue), searchEvents(by a given date), searchEvents(by a given employee)
 - [x] OrderService: getTicket, changeTicket, deleteTicket, getOrder, addOrder, showOrders
-- [x] UserService: signIn, logOff, getCurrentUser, showUsers, register, viewHistory, editCredentials, viewCalendar
+- [x] UserService: signIn, logOff, getCurrentUser, showUsers, register, viewHistory, changeCreditCard, viewCalendar
 - [x] VenueService: showVenues, addVenue, removeVenue
