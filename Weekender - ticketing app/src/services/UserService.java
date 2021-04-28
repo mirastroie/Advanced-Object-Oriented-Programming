@@ -1,12 +1,15 @@
 package services;
 import entities.*;
+import services.IO.Audit;
+import services.IO.ClientIOService;
+import services.IO.OrganizerIOService;
 import util.Auth;
 import util.EventSorterAscByStartDate;
-
 import java.time.LocalDate;
 import java.util.*;
-
+import java.util.stream.Collectors;
 import util.MyException;
+import util.PermissionDenied;
 import validators.UserValidator;
 
 public class UserService implements Auth {
@@ -14,10 +17,22 @@ public class UserService implements Auth {
     User currentUser;
     private static UserService userService;
     private UserService(){
-        users = new ArrayList<User>();
+        users = new ArrayList<>();
+        users.addAll(ClientIOService.getClientIOService().load());
+        users.addAll(OrganizerIOService.getOrganizerIOService().load());
         currentUser = null;
     }
-
+    public void close()
+    {
+        List<Client> clients = users.stream()
+                .filter(i -> i instanceof Client).map(i -> (Client) i)
+                .collect(Collectors.toList());
+        List<Organizer> organizers = users.stream()
+                .filter(i -> i instanceof Organizer).map(i -> (Organizer) i)
+                .collect(Collectors.toList());
+        ClientIOService.getClientIOService().save(clients);
+        OrganizerIOService.getOrganizerIOService().save(organizers);
+    }
     public static UserService getUserService()
     {
         if(userService == null)
@@ -26,6 +41,7 @@ public class UserService implements Auth {
     }
     public void logOff()
     {
+        Audit.getAudit().addAction("logOff");
         if(currentUser != null)
         {currentUser = null;
             System.out.println("You logged off!");}
@@ -34,6 +50,7 @@ public class UserService implements Auth {
     }
     public void signIn() throws MyException
     {
+        Audit.getAudit().addAction("signIn");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Username: ");
         String username = scanner.nextLine();
@@ -43,7 +60,7 @@ public class UserService implements Auth {
         for(int i = 0; i < users.size(); i ++)
         {
             User user = users.get(i);
-            if(user.getUsername().equals(username) && user.getPassword().equals(password))
+            if(user.getUsername().equals(username) && user.getPassword().compareTo(password) == 0)
             {
                  currentUser = user;
                  break;
@@ -59,6 +76,7 @@ public class UserService implements Auth {
 
     public void showUsers()
     {
+        Audit.getAudit().addAction("showUsers");
         System.out.println("\nTHE USERS ARE: ");
         for(User user: users)
         {
@@ -69,6 +87,7 @@ public class UserService implements Auth {
     }
     public void register(User user) throws MyException
     {
+        Audit.getAudit().addAction("register");
         try {
             UserValidator validator = new UserValidator();
             String errors = validator.validate(user.getPassword(), user.getEmail());
@@ -79,10 +98,11 @@ public class UserService implements Auth {
                 throw new MyException("The user is already registered!");
             for (User value : users) {
                 if (user.getEmail().equals(value.getEmail()))
-                    throw new MyException("Two user can't have the same email address.");
+                    throw new MyException("Two users can't have the same email address.");
             }
             users.add(user);
-            System.out.println("You were successfully registered as a/an " + user.getClass().getName() + "! Welcome " + user.getFullname());
+            System.out.println("You were successfully registered as a/an " + user.getClass().getName() + "! Welcome "
+                    + user.getFullname() + "!");
 
         }
         catch(MyException e)
@@ -92,13 +112,15 @@ public class UserService implements Auth {
     }
     public void viewHistory(User user) throws MyException {
 
+        Audit.getAudit().addAction("viewHistory");
         if(user instanceof Client) {
             Client client = (Client) user;
             System.out.println("Your order history is: ");
             List<Order> clientOrders = client.getOrders();
-            Comparator<Order> orderComparatorByDate = (o1, o2) -> o1.getDatePurchased().compareTo(o2.getDatePurchased());
+            Comparator<Order> orderComparatorByDate = (o1, o2) -> o1.getDatePurchased()
+                    .compareTo(o2.getDatePurchased());
             Collections.sort(clientOrders, orderComparatorByDate);
-            int totalSum = 0;
+            double totalSum = 0;
             for (Order clientOrder : clientOrders) {
 
                 totalSum += clientOrder.getTotalPrice();
@@ -106,17 +128,24 @@ public class UserService implements Auth {
             }
             System.out.println("The cumulative price is " + totalSum + "$.\n");
         }
-        else throw new MyException("Permission denied.");
+        else throw new PermissionDenied();
 
     }
-    public void editCredentials(User user, CreditCard card)
+    public void changeCreditCard(User user, CreditCard card)
     {
-        user.setCreditCard(card);
-        System.out.println("Your account was successfully modified!");
-        System.out.println(user.getCreditCard().toString());
+        Audit.getAudit().addAction("changeCreditCard");
+        if(user instanceof Client) {
+            Client client = (Client)user;
+            client.setCreditCard(card);
+            System.out.println("Your account was successfully modified!");
+            System.out.println(client.getCreditCard());
+        }
+        else
+            System.out.println("You don't have a credit card!");
     }
     public void viewCalendar(User user) throws MyException
     {
+        Audit.getAudit().addAction("viewCalendar");
         if(user instanceof Client) {
 
             Client client = (Client) user;
@@ -141,6 +170,20 @@ public class UserService implements Auth {
             System.out.println("Events this month: ");
             for (Event monthEvent : monthEvents) System.out.println(monthEvent.toString());
         }
-        else throw new MyException("Permission denied.");
+        else throw new PermissionDenied();
+    }
+    public Organizer getOrganizerById(int id)
+    {
+        Optional<User> organizer = users.stream()
+                .filter(elem -> elem.getId() == id && elem instanceof Organizer)
+                .findFirst();
+        return (Organizer) organizer.orElse(null);
+    }
+    public Client getClientById(int id)
+    {
+        Optional<User> client = users.stream()
+                .filter(elem -> elem.getId() == id && elem instanceof Client)
+                .findFirst();
+        return (Client) client.orElse(null);
     }
 }

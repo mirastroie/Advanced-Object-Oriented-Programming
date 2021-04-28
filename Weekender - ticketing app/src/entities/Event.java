@@ -2,10 +2,12 @@ package entities;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Event {
-    private final String id;
+    private final Integer id;
     private String name;
+    private static Integer max = 1;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String description;
@@ -17,8 +19,8 @@ public class Event {
 
 
     public Event(String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
-                 int basePrice, Venue venue, List<Employee> lineup, Organizer organizer) {
-        this.id =  UUID.randomUUID().toString();
+                 double basePrice, Venue venue, List<Employee> lineup, Organizer organizer) {
+        this.id =  max ++;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -29,10 +31,37 @@ public class Event {
         this.lineup = lineup;
         this.organizer = organizer;
     }
+    public Event(Integer id, String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
+                 double basePrice, Venue venue, List<Employee> lineup, Organizer organizer) {
+        this.id = id;
+        max = Math.max(max,id) + 1;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
+        this.availableSeats = availableSeats;
+        this.basePrice = basePrice;
+        this.venue = venue;
+        this.lineup = lineup;
+        this.organizer = organizer;
+    }
+    public Event(String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
+                 double basePrice, Venue venue, List<Employee> lineup) {
+
+        this.id =  max ++;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
+        this.availableSeats = availableSeats;
+        this.basePrice = basePrice;
+        this.venue = venue;
+        this.lineup = lineup;
+    }
 
     public Event(String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
-                 int basePrice, Venue venue) {
-        this.id =  UUID.randomUUID().toString();
+                 double basePrice, Venue venue) {
+        this.id = max ++ ;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -41,6 +70,10 @@ public class Event {
         this.basePrice = basePrice;
         this.lineup = new ArrayList<Employee>();
         this.venue = venue;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getName() {
@@ -120,12 +153,16 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(id, event.id);
+        return availableSeats == event.availableSeats && Double.compare(event.basePrice, basePrice) == 0 &&
+                Objects.equals(name, event.name) && Objects.equals(startTime, event.startTime) &&
+                Objects.equals(endTime, event.endTime) && Objects.equals(description, event.description) &&
+                Objects.equals(venue, event.venue) && Objects.equals(lineup, event.lineup) &&
+                Objects.equals(organizer, event.organizer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(startTime, endTime, description, availableSeats, basePrice, venue, lineup, organizer);
     }
 
     @Override

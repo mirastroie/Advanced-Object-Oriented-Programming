@@ -1,0 +1,7 @@
+Id, Section, Row, Seat Number, Refund Policy, Event, Type
+1, 45, E, 20, ChangeSeat, 4, Premium
+2, 23, A, 2, NoRefund, 2, Regular
+3, 2, C, 14, ThirtyDaysCancellation, 2, Regular
+4, 103, H, 89, ChangeSeat, 1, Premium
+5, 103, H, 90, ChangeSeat, 1, Premium
+6, 10, B, 13, NoRefund, 3, Regular

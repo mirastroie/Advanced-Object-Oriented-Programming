@@ -1,18 +1,21 @@
 package services;
-
 import entities.Employee;
+import services.IO.Audit;
+import services.IO.EmployeeIOService;
 import util.MyException;
 import validators.EmployeeValidator;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class EmployeeService {
 
-    private List<Employee> employees;
+    private TreeSet<Employee> employees;
     private static EmployeeService employeeService;
     private EmployeeService(){
-        employees = new ArrayList<Employee>();
+        employees = new TreeSet<>(EmployeeIOService.getEmployeeIOService().load());
+    }
+    public void close()
+    {
+        EmployeeIOService.getEmployeeIOService().save(new ArrayList<>(employees));
     }
     public static EmployeeService getEmployeeService()
     {
@@ -20,8 +23,25 @@ public class EmployeeService {
             employeeService = new EmployeeService();
         return employeeService;
     }
+    public Employee getEmployeeById(int id)
+    {
+
+        Optional<Employee> employee = employees.stream().filter(elem -> elem.getId() == id).findFirst();
+        return employee.orElse(null);
+
+    }
+    public List<Employee> getEmployeesByIds(List<Integer> ids)
+    {
+        List<Employee> employees = new ArrayList<>(List.of());
+        for(Integer i: ids)
+        {
+            employees.add(getEmployeeById(i));
+        }
+        return employees;
+    }
     public void addEmployee(Employee employee)
     {
+        Audit.getAudit().addAction("addEmployee");
         try {
 
             EmployeeValidator validator = new EmployeeValidator();
@@ -29,8 +49,7 @@ public class EmployeeService {
             if (errors.length() > 0) {
                throw new MyException(errors);
             }
-            if (!employees.contains(employee))
-                employees.add(employee);
+            employees.add(employee);
         }
         catch (MyException e)
         {
@@ -39,9 +58,13 @@ public class EmployeeService {
     }
     public void showEmployees()
     {
+        Audit.getAudit().addAction("showEmployees");
         System.out.println("\nTHE EMPLOYEES ARE: ");
-        for(int i = 0; i < employees.size(); i ++)
-            System.out.println((i+1) + ". " + employees.get(i).toString());
+        int i = 1;
+        for (Employee employee : employees) {
+            System.out.println(i + ". " + employee);
+            i += 1;
+        }
         System.out.println();
     }
 }

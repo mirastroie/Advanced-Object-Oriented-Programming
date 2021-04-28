@@ -1,22 +1,35 @@
 package entities;
 
-import java.time.LocalDate;
-import entities.CreditCard;
-
 public class CreditCard {
     private CardType cardType;
     private String PAN;
     private String expirationMonth;
     private String expirationYear;
     private String cardHolder;
+    private int CardId;
+    private static int max = 1;
     private double balance;
 
-    public CreditCard(CardType cardType, String PAN, String expirationMonth, String expirationYear, String cardHolder) {
+    public CreditCard(int id, CardType cardType, String PAN, String expirationMonth, String expirationYear, String cardHolder) {
+        this.CardId = id;
+        max = Math.max(id,max) + 1;
         this.cardType = cardType;
         this.PAN = PAN;
         this.expirationMonth = expirationMonth;
         this.expirationYear = expirationYear;
         this.cardHolder = cardHolder;
+    }
+    public CreditCard(CardType cardType, String PAN, String expirationMonth, String expirationYear, String cardHolder) {
+        this.CardId = max ++;
+        this.cardType = cardType;
+        this.PAN = PAN;
+        this.expirationMonth = expirationMonth;
+        this.expirationYear = expirationYear;
+        this.cardHolder = cardHolder;
+    }
+
+    public int getCardId() {
+        return CardId;
     }
     public void setBalance(double balance)
     {
@@ -73,4 +86,10 @@ public class CreditCard {
                 ", cardHolder='" + cardHolder + '\'' +
                 '}';
     }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
 }

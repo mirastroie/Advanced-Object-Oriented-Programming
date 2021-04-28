@@ -3,160 +3,219 @@ import services.*;
 import util.MyException;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
+    static VenuesService venueService;
+    static EmployeeService employeeService;
+    static UserService userService;
+    static EventService eventService;
+    static OrderService orderService;
 
-
-
-        EmployeeService employeeService = EmployeeService.getEmployeeService();
-        VenuesService venueService = VenuesService.getVenuesService();
-        EventService eventService = EventService.getEventService();
-        UserService userService = UserService.getUserService();
-        OrderService orderService = OrderService.getOrderService();
-
-        //testam functionalitatea serviciului VenueService
-        Venue venue = new Venue("Madison Square Garden", "MSG is a multi-purpose indoor arena in New York City," +
-                " being the oldest major sporting facility in the NY metropolitan area.",
-                20000, "4 Pennsylvania Plaza, NYC","New York","10010","US",50.6);
-        venueService.addVenue(venue);
-        Venue venue2 = new Venue("Philippine Arena", "The world's largest indoor arena. Arranged on a greenfield site " +
-                "north of Manila, at Ciudad de Victoria in Sta. Maria Bulacan, the arena has been intended to have the greatest " +
-                "conceivable number of individuals. ",
-                55000, "Ciudad de Victoria, Bocaue","Bulacan","05976","Philippines",100.2);
-        venueService.addVenue(venue2);
-        Venue venue3 = new Venue("Hungarian State Opera House","Designed by Miklós Ybl, the Neo-Renaissance Hungarian " +
-                "State Opera House opened in 1884.",2000,"Andrássy út 22","Budapest","10610","Hungary",
-                20.7);
-        venueService.addVenue(venue3);
+    public static void startServices()
+    {
+        // 0. "Pornirea" servicilor
+        venueService = VenuesService.getVenuesService();
+        employeeService = EmployeeService.getEmployeeService();
+        userService = UserService.getUserService();
+        eventService = EventService.getEventService();
+        orderService = OrderService.getOrderService();
+    }
+    public static void venueServicesDemo()
+    {
+        // 1. Venue Service
         venueService.showVenues();
-        venueService.removeVenue(venue2.getId());
-        Venue venue4 = new Venue("Paris La Défense Arena","The Paris La Defense Arena was built for the 2024 Olympics that" +
-                " are set to be held in Paris, France.",-19,"address","Paris","9012","france4",90);
-        venueService.addVenue(venue4);
+        venueService.removeVenue(3);
         venueService.showVenues();
-        venueService.addVenue(venue2);
-
-
-        //testam functionalitatea serviciului EventService si EmployeeService
+        Venue firstVenue = new Venue( "Paris Arena", "The Paris Arena was " +
+                "built for the 2024 Olympics that are set to be held in Paris, France.", -19, "address",
+                "Paris", "9012", "france4", 90);
+        Venue secondVenue = new Venue( "Hungarian State Opera House", "Designed by Miklós Ybl, the " +
+                "Neo-Renaissance Hungarian State Opera House opened in 1884.", 2000, "Andrássy út 22",
+                "Budapest", "10610", "Hungary", 20.7);
+        Venue thirdVenue = new Venue( "O2 Arena", "is a multi-purpose indoor arena in the centre " +
+                "of The O2 entertainment complex on the Greenwich Peninsula in southeast London.", 20000,
+                "Peninsula Square, London", "Greater London", "20110", "UK", 35);
+        venueService.addVenue(firstVenue);
+        venueService.addVenue(secondVenue);
+        venueService.addVenue(thirdVenue);
+        venueService.showVenues();
+    }
+    public static void organizerEventServicesDemo() {
+        // 2. User Service(Organizer), Employee Service, Event Service
         try {
-
-            Organizer organizer = new Organizer("New York best organizer", "Alexa Rose", "alexarose",
-                    "123alexaA", "alexarose@gmail.com");
+            Organizer organizer = new Organizer("New York's best organizer", "Alexa Rose",
+                    "alexarose", "123alexaA", "alexarose@gmail.com");
             userService.register(organizer);
 
-            List<Employee> employees = new ArrayList<Employee>();
-            Employee stevie = new Employee(" She is known for her distinctive voice, mystical stage persona and poetic," +
-                    " symbolic lyrics", "Singer", "Stevie-Lynn", "Nicks");
-            Employee mick = new Employee("He is a British musician and actor, best known as the drummer, co-founder, and " +
-                    "leader of the rock band Fleetwood Mac.","Singer","Mick","Fleetwood");
-            employees.add(stevie);
+            List<Employee> employees = new ArrayList<>();
+            Employee christine = new Employee("She is known for her contralto vocals and her direct but " +
+                    "poignant lyrics, which focus on love and relationships. ", "Singer",
+                    "Christine-Anne", "Mcvie");
+            Employee mick = new Employee("He is a British musician and actor, best known as the drummer," +
+                    " co-founder, and leader of the rock band Fleetwood Mac.", "Singer", "Mick",
+                    "Fleetwood");
+            employees.add(christine);
             employees.add(mick);
-            Event event = new Event("July Vibes", LocalDateTime.of(2021, 7, 21, 18, 0),
-                    LocalDateTime.of(2021, 7, 29, 12, 0), "Fleetwood Mac concert",
-                    20000, 150, venue, employees, organizer);
-            Event event2 = new Event("Universal", LocalDateTime.of(2021, 9, 10, 12, 23),
-                    LocalDateTime.of(2021, 9, 11, 3, 0), "Movie marathon", 100,
-                    20, venue2);
-            Event event3 = new Event("New beginnings", LocalDateTime.of(2021, 3, 31, 18, 30),
-                    LocalDateTime.of(2021, 4, 1, 12, 23), "Spring event", 2230000,
-                    10, venue2);
-            Event event4 = new Event("New York Rangers vs Pittsburgh Penguins",LocalDateTime.of(2021,4,6,
-                    19,0),LocalDateTime.of(2021,4,6,21,30),"The New York Rangers" +
-                    " play the Pittsburgh Penguins at Madison Square Garden on April 6, 2021.",10000,70,venue);
-            Event event5 = new Event("New beginnings", LocalDateTime.of(2021, 3, 30, 18, 30),
-                    LocalDateTime.of(2021, 3, 30, 20, 23), "Spring event", 2000,
-                    10, venue2);
+            Event firstEvent = new Event("New beginnings", LocalDateTime.of(2021, 3, 31,
+                    18, 30), LocalDateTime.of(2021, 4, 1, 12, 23),
+                    "Spring event", 2230000,
+                    10, venueService.getVenueById(1));
+            Event secondEvent = new Event("Rumours", LocalDateTime.of(2021, 9, 30,
+                    18, 30), LocalDateTime.of(2021, 9, 30, 20, 23),
+                    "A Fleetwood Mac concert celebrating the album's 44 anniversary.", 2000,
+                    10, venueService.getVenueById(1), employees);
+            Event thirdEvent = new Event("Rolling Stones Story", LocalDateTime.of(2021, 9, 30,
+                    14, 30), LocalDateTime.of(2021, 9, 30, 22, 23),
+                    "A Rolling Stones concert.", 1500,
+                    10, venueService.getVenueById(1));
 
-            // ne inregistram drept organizator cu username = alexarose si parola = 123alexaA
+            // Exemplu de date de autentificare:
+            // username = alexarose
+            // password = 123alexaA
             try {
                 userService.signIn();
-                eventService.addEvent(event);
-                eventService.addEvent(event2);
-                eventService.addEvent(event3);
-                // evenimentul event4 nu o sa fie adaugat din cauza ca atributul capacity depaseste capacitatea locatiei
-                eventService.addEvent(event4);
-                eventService.addEvent(event5);
-            }
-            catch(MyException e)
-            {
-                throw e;
-            }
-            finally {
+                // evenimentul nu o sa fie adaugat (atributul capacity depaseste capacitatea locatiei)
+                eventService.addEvent(firstEvent);
+                eventService.addEvent(secondEvent);
+                eventService.addEvent(thirdEvent);
+                eventService.showEvents();
+                eventService.searchEvents(christine);
+                eventService.searchEvents(venueService.getVenueById(1));
+                eventService.searchEvents(LocalDateTime.of(2021, 6, 30, 12, 0));
+                employeeService.showEmployees();
+                if(userService.getCurrentUser() instanceof Organizer)
+                {
+                    Organizer currentOrganizer = (Organizer) userService.getCurrentUser();
+                    System.out.println(currentOrganizer.getEvents());
+                }
+
+
+            } finally {
 
                 userService.logOff();
             }
-            eventService.showEvents();
-            eventService.searchEvents(stevie);
-            eventService.searchEvents(venue);
-            eventService.searchEvents(LocalDateTime.of(2021,6,30,12,0));
-            employeeService.showEmployees();
+        } catch (MyException e) {
+            System.out.println(e.toString());
 
-            //ilustrarea functionalitatiilor oferite de UserService si OrderService
-            Client america = new Client("0756123446","america27","america@gmail.com","America Stevens",
-                    "mer12ABC");
+        }
+    }
+    public static void clientOrderServicesDemo()
+    {
+        try {
+            // 3. User Service(Client), Order service
+            Client america = new Client("0756123446", "america27", "america@gmail.com",
+                    "America Stevens", "mer12ABC");
             userService.register(america);
 
             try {
-                //ne inregistram drept client cu username  = america27 si password = mer12ABC
+                // Exemplu de date de autentificare:
+                // username  = andrew.flores
+                // password = Ferr2is
                 userService.signIn();
-                userService.editCredentials(userService.getCurrentUser(), new CreditCard(CardType.VISA, "373826021134959", "01",
-                        "2029", "Luana Stevens"));
+                userService.changeCreditCard(userService.getCurrentUser(), new CreditCard(1, CardType.VISA,
+                        "373826021134959", "01", "2029", "Luana Stevens"));
                 userService.showUsers();
 
-                Ticket ticket1 = new Regular(45, 'E', 20, RefundPolicy.ChangeSeat, event);
-                List<Ticket> lista = new ArrayList<>();
-                lista.add(ticket1);
-                Order order = new Order(LocalDateTime.now(), lista);
-                orderService.addOrder(userService.getCurrentUser(), order);
+                List<Ticket> firstOrderTickets = new ArrayList<>();
+                Ticket firstTicket = new Regular(49, 'E', 29, RefundPolicy.ChangeSeat,
+                        eventService.getEventById(1));
+                firstOrderTickets.add(firstTicket);
+                Order firstOrder = new Order(LocalDateTime.now(), firstOrderTickets);
+                orderService.addOrder(userService.getCurrentUser(), firstOrder);
+                System.out.println("Id-ul user-ului cureent este " + userService.getCurrentUser().getId());
+                List<Ticket> secondOrderTickets = new ArrayList<>();
+                secondOrderTickets.add(new Premium(3, 'K', 55, RefundPolicy.NoRefund,
+                        eventService.getEventById(2)));
+                secondOrderTickets.add(new Premium(30, 'S', 89, RefundPolicy.ThirtyDaysCancellation,
+                        eventService.getEventById(4)));
+                secondOrderTickets.add(new Premium(45, 'E', 22, RefundPolicy.ThirtyDaysCancellation,
+                        eventService.getEventById(5)));
 
-                List<Ticket> tickets2 = new ArrayList<>();
-                tickets2.add(new Premium(3, 'F', 55, RefundPolicy.NoRefund, event2));
-                tickets2.add(new Premium(30, 'F', 89, RefundPolicy.ThirtyDaysCancellation, event4));
-                tickets2.add(new Premium(45, 'A', 22, RefundPolicy.ThirtyDaysCancellation, event5));
-                Order order2 = new Order(LocalDateTime.now().minusDays(3), tickets2);
-                orderService.addOrder(userService.getCurrentUser(), order2);
+                Order secondOrder = new Order(LocalDateTime.now().minusDays(3), secondOrderTickets);
+                orderService.addOrder(userService.getCurrentUser(), secondOrder);
+
                 userService.viewHistory(userService.getCurrentUser());
-                Order order3 = orderService.getOrder(order2.getId());
-                orderService.deleteTicket(tickets2.get(1).getId(), order3.getId(), userService.getCurrentUser());
-                Ticket newTicket = new Regular(34, 'F', 98, RefundPolicy.NoRefund, event);
-                orderService.changeTicket(userService.getCurrentUser(), ticket1.getId(), newTicket);
+                Order thirdOrder = orderService.getOrder(secondOrder.getId());
+                orderService.deleteTicket(secondOrderTickets.get(1).getId(), thirdOrder.getId(),
+                        userService.getCurrentUser());
+
+                if(userService.getCurrentUser() instanceof Client)
+                {
+                    Client client = (Client)userService.getCurrentUser();
+                    System.out.println("Your balance is: " + client.getCreditCard().getBalance());
+                }
+                Ticket newTicket = new Regular(34, 'F', 98, RefundPolicy.NoRefund,
+                        eventService.getEventById(1));
+                orderService.changeTicket(userService.getCurrentUser(), firstTicket.getId(), newTicket);
                 userService.viewHistory(userService.getCurrentUser());
                 userService.viewCalendar(userService.getCurrentUser());
 
-
-            }catch(MyException e)
-            {
+            } catch (MyException e) {
                 System.out.println(e.toString());
-            }
-            finally {
+            } finally {
                 userService.logOff();
             }
-        try
-        {
-            // Un organizator NU poate plasa comenzi:
-            // ne inregistram cu username = alexarose si parola = 123alexaA
-            userService.signIn();
-            Ticket ticket3 = new Regular(58,'G',43,RefundPolicy.ThirtyDaysCancellation,event);
-            Order order4 = new Order(LocalDateTime.now().minusDays(3), new ArrayList<Ticket>(Arrays.asList(ticket3)));
-            orderService.addOrder(userService.getCurrentUser(),order4);
-
-        }
-        catch(MyException e)
+        }catch (MyException e)
         {
             System.out.println(e.toString());
         }
-        finally {
+    }
+    public static void clientPrivilegeDemo()
+    {
+        try {
+            // Un organizator NU poate plasa comenzi:
+            // Exemplu de date pentru autentificare:
+            // username = kaptivesports
+            // password = K3pt2ve
+            userService.signIn();
+            Ticket secondTicket = new Regular(59, 'G', 43, RefundPolicy.ThirtyDaysCancellation,
+                    eventService.getEventById(1));
+            Order order4 = new Order(LocalDateTime.now().minusDays(3), new ArrayList<>(Arrays.asList(secondTicket)));
+            orderService.addOrder(userService.getCurrentUser(), order4);
+
+        } catch (MyException e) {
+            System.out.println(e.toString());
+        } finally {
             userService.logOff();
         }
+    }
+    public static void orderServiceDemo()
+    {
+
         orderService.showOrders();
+        HashMap<Double, Set<Order>> map = orderService.getOrdersbyPriceRange();
+        for (Map.Entry<Double, Set<Order>> doubleSetEntry : map.entrySet()) {
+            System.out.println("The orders with the total prices lower than" + ((Map.Entry) doubleSetEntry).getKey() +
+                    " are: \n" + ((Map.Entry) doubleSetEntry).getValue());
         }
-        catch(MyException e)
+    }
+    public static void closeServices()
+    {
+        // 4. "Oprirea" servicilor
+        employeeService.close();
+        venueService.close();
+        eventService.close();
+        userService.close();
+        orderService.close();
+    }
+    public static void main(String[] args) {
+
+
+        try {
+            startServices();
+            venueServicesDemo();
+            organizerEventServicesDemo();
+            clientOrderServicesDemo();
+            clientPrivilegeDemo();
+            orderServiceDemo();
+
+        }catch(Exception e)
         {
             System.out.println(e.toString());
+
+        }finally {
+            closeServices();
         }
     }
 }

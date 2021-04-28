@@ -1,0 +1,7 @@
+Id, Name, Start Date, End Date, Description, Available Seats, Base Price, Venue, Employees, Organizer
+1, July Vibes, 21 July 2021 18:00, 22 July 2021 23:30, "Fleetwood Mac concert", 20000, 150.0, 1, "1, 2", 9
+2, Eagles Concert, 28 August 2021 19:00, 28 August 2021 22:00, "Concert by the Eagles - an American rock band formed in Los Angeles in 1971. With five number-one singles and six number one albums, six Grammy Awards, and five American Music Awards, the Eagles were one of the most successful musical acts of the 1970s in North America.", 20000, 68.0, 4, "7", 9
+3, New York Rangers vs Pittsburgh Penguins, 06 April 2021 18:30, 06 April 2021 21:30, "The New York Rangers play the Pittsburgh Penguins at Madison Square Garden on April 6, 2021.", 10000, 70.0, 1, "3, 4", 8
+4, Home I’m Darling, 29 April 2021 13:30, 29 April 2021 14:30, "This incisive and entertaining Olivier award-winning new comedy is full of big skirts and big questions.", 200, 100.0, 5, "5, 6", 6
+5, Les Enfants Terribles, 21 November 2020 16:00, 21 November 2020 17:40, "A ballet-opera by Philip Glass based on the story by Jean Cocteau, in French.", 320, 40.0, 3, "[]", 10
+6, The Optical Effect Film Festival, 25 June 2021 13:00, 29 June 2021 23:00, "Film festival", 1000, 150.0, 6, "[]", 7

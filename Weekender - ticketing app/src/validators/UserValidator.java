@@ -12,13 +12,6 @@ public class UserValidator {
     {
         return password.matches("[A-Za-z0-9]{7,24}");
     }
-    public String validatePhoneNumber(String phoneNumber)
-    {
-        StringBuilder error = new StringBuilder();
-        if(!phoneNumber.matches("[0-9]{10}"))
-            error.append(Error.INVALID_PHONE);
-        return error.toString();
-    }
     public String validate(String password, String email){
         StringBuilder errors = new StringBuilder();
         if(!validateEmail(email))

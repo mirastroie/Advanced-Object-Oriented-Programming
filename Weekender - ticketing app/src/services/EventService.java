@@ -1,6 +1,9 @@
 package services;
 import entities.*;
+import services.IO.Audit;
+import services.IO.EventIOService;
 import util.MyException;
+import util.PermissionDenied;
 import validators.EventValidator;
 
 import java.time.format.DateTimeFormatter;
@@ -8,6 +11,10 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 public class EventService {
@@ -15,7 +22,22 @@ public class EventService {
     private List<Event> events;
     private static EventService eventService;
     private EventService(){
-          events = new ArrayList<Event>();
+        events = EventIOService.getEventIOService().load();
+        System.out.println(events);
+        for(Event event: events)
+        {
+            if(event.getOrganizer() != null)
+            {
+                Organizer organizer = event.getOrganizer();
+                List<Event> organizerEvents = organizer.getEvents();
+                organizerEvents.add(event);
+                organizer.setEvents(organizerEvents);
+            }
+        }
+    }
+    public void close()
+    {
+        EventIOService.getEventIOService().save(events);
     }
     public static EventService getEventService()
     {
@@ -23,8 +45,19 @@ public class EventService {
             eventService = new EventService();
         return eventService;
     }
+    public boolean isCurrentVenue(int venueId)
+    {
+        Set<Integer> currentVenuesIds= events.stream().map(i -> i.getVenue().getId()).collect(Collectors.toSet());
+        return currentVenuesIds.contains(venueId);
+    }
+    public Event getEventById(int id)
+    {
+        Optional<Event> event = events.stream().filter(elem -> elem.getId() == id).findFirst();
+        return event.orElse(null);
+    }
     public void addEvent(Event event) throws MyException
     {
+        Audit.getAudit().addAction("addEvent");
         try {
 
             UserService userService = UserService.getUserService();
@@ -39,7 +72,7 @@ public class EventService {
                     throw new MyException("The event is already added!");
 
                 event.setOrganizer(organizer);
-                //daca agajatii nu sunt deja adaugati, ii adaugam
+                //daca agajatii nu sunt deja adaugati in EmployeeService, ii adaugam
                 EmployeeService employeeService = EmployeeService.getEmployeeService();
                 for (Employee employee : event.getLineup())
                     employeeService.addEmployee(employee);
@@ -50,7 +83,7 @@ public class EventService {
                 organizer.setEvents(organizerEvents);
             }
             else
-                throw new MyException("Permission denied.");
+                throw new PermissionDenied();
 
         }
         catch(MyException e)
@@ -60,6 +93,7 @@ public class EventService {
     }
     public void showEvents()
     {
+        Audit.getAudit().addAction("showEvents");
         System.out.println("THE EVENTS ARE: ");
         for(int i = 0; i < events.size(); i ++)
             System.out.println((i+1) + ". " + events.get(i).toString());
@@ -68,49 +102,67 @@ public class EventService {
 
     public List<Event> searchEvents(Venue venue)
     {
-        LocalDateTime now = LocalDateTime.now();
+        Audit.getAudit().addAction("searchEvents");
+        VenuesService venuesService = VenuesService.getVenuesService();
         List<Event> foundEvents = new ArrayList<Event>();
-        for (Event event : events)
-            if (event.getVenue().equals(venue) && event.getStartTime().isAfter(now))
-                foundEvents.add(event);
+        if(venuesService.getVenues().contains(venue)) {
+            LocalDateTime now = LocalDateTime.now();
+            for (Event event : events)
+                if (event.getVenue().equals(venue) && event.getStartTime().isAfter(now))
+                    foundEvents.add(event);
 
-        System.out.println("----------------------");
-        System.out.println("The events being held at " + venue.getName() + " are: ");
-        for (Event foundEvent : foundEvents) System.out.println(foundEvent.toString());
-        System.out.println("----------------------");
+            System.out.println("----------------------");
+            System.out.println("The events being held at " + venue.getName() + " are: ");
+            foundEvents.forEach(System.out::println);
+            System.out.println("----------------------");
+
+            return foundEvents;
+        }
+        else
+            System.out.println("The venue could not be found!");
         return foundEvents;
     }
     public List<Event> searchEvents(LocalDateTime date)
     {
-
+        Audit.getAudit().addAction("searchEvents");
         List<Event> foundEvents = new ArrayList<Event>();
         for (Event event : events)
             if (event.getStartTime().isAfter(date))
                 foundEvents.add(event);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm");
+        Consumer<Event> show = System.out::println;
         System.out.println("----------------------");
         System.out.println("The events after " + date.format(formatter) + " are: ");
-        for (Event foundEvent : foundEvents)
-            System.out.println(foundEvent.toString());
+        for(Event event: foundEvents)
+                  show.accept(event);
         System.out.println("----------------------");
+
         return foundEvents;
     }
 
     public List<Event> searchEvents(Employee employee)
     {
-        LocalDateTime now = LocalDateTime.now();
+        Audit.getAudit().addAction("searchEvents");
+        EmployeeService employeeService = EmployeeService.getEmployeeService();
         List<Event> foundEvents = new ArrayList<Event>();
-        for (Event event : events) {
-            List<Employee> employees = event.getLineup();
-            if (employees.contains(employee) && event.getStartTime().isAfter(now))
-                foundEvents.add(event);
+        if(employeeService.getEmployeeById(employee.getId())!=null) {
+            LocalDateTime now = LocalDateTime.now();
+
+            for (Event event : events) {
+                List<Employee> employees = event.getLineup();
+                if (employees.contains(employee) && event.getStartTime().isAfter(now))
+                    foundEvents.add(event);
+            }
+            System.out.println("----------------------");
+            System.out.println("The events in which " + employee.getFirstName() + " " + employee.getLastName() +
+                    " is going to perform are: ");
+            for (Event foundEvent : foundEvents)
+                System.out.println(foundEvent.toString());
+            System.out.println("----------------------");
         }
-        System.out.println("----------------------");
-        System.out.println("The events in which " + employee.getFirstName() + " " + employee.getLastName() + " is going to perform are: ");
-        for (Event foundEvent : foundEvents)
-            System.out.println(foundEvent.toString());
-        System.out.println("----------------------");
+        else
+            System.out.println("The employee could not be found");
         return foundEvents;
     }
 }

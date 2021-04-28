@@ -7,10 +7,12 @@ import java.util.List;
 public class Order {
     private int id;
     private static int nrOrders;
+    private static int max = 1;
     private LocalDateTime datePurchased;
     private List<Ticket> tickets;
     protected double totalPrice;
     private Client client;
+    private int CreditCardId;
 
     public void computePrice(){
         double totalPrice = 0;
@@ -18,12 +20,39 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     public Order(LocalDateTime datePurchased, List<Ticket> tickets)
     {
         nrOrders ++;
-        this.id = nrOrders;
+        this.id = max ++ ;
         this.datePurchased = datePurchased;
         this.tickets = tickets;
+        computePrice();
+
+    }
+    public Order(Integer id, LocalDateTime datePurchased, List<Ticket> tickets, Client client)
+    {
+        nrOrders ++;
+        this.id = id;
+        max = Math.max(id,max) + 1;
+        this.datePurchased = datePurchased;
+        this.tickets = tickets;
+        this.client = client;
+        computePrice();
+
+    }
+    public Order(LocalDateTime datePurchased, List<Ticket> tickets, Client client, int creditCardId)
+    {
+        nrOrders ++;
+        this.id = max ++;
+        this.datePurchased = datePurchased;
+        this.tickets = tickets;
+        this.client = client;
+        this.CreditCardId = creditCardId;
+        computePrice();
 
     }
     public void setClient(Client client)
@@ -62,7 +91,7 @@ public class Order {
     }
 
     public void setTickets(List<Ticket> tickets) {
-        this.tickets = tickets;
+        this.tickets = tickets;computePrice();
     }
     public double getTotalPrice() {
         return totalPrice;

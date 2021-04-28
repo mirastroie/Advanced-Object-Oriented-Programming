@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Venue {
     private int id;
     private static int nrVenues;
+    private static int max = 1;
     protected String name;
     protected String description;
     private int capacity;
@@ -14,10 +15,24 @@ public class Venue {
     protected String country;
     protected double parkingFee;
 
+    public Venue(Integer id, String name, String description, int capacity, String address, String region, String ZIP, String country, double parkingFee)
+    {
+        nrVenues ++;
+        this.id = id;
+        max = Math.max(id,max) + 1;
+        this.name = name;
+        this.description = description;
+        this.capacity = capacity;
+        this.address = address;
+        this.ZIP = ZIP;
+        this.region = region;
+        this.country = country;
+        this.parkingFee = parkingFee;
+    }
     public Venue(String name, String description, int capacity, String address, String region, String ZIP, String country, double parkingFee)
     {
         nrVenues ++;
-        this.id = nrVenues;
+        this.id = max ++;
         this.name = name;
         this.description = description;
         this.capacity = capacity;
@@ -105,12 +120,24 @@ public class Venue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Venue venue = (Venue) o;
-        return id == venue.id;
+        return capacity == venue.capacity && Double.compare(venue.parkingFee, parkingFee) == 0 &&
+                Objects.equals(name, venue.name) && Objects.equals(description, venue.description)
+                && Objects.equals(address, venue.address) && Objects.equals(region, venue.region)
+                && Objects.equals(ZIP, venue.ZIP) && Objects.equals(country, venue.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        int result = 17;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + capacity;
+        result = 31 * result + address.hashCode();
+        result = 31 * result + ZIP.hashCode();
+        result = 31 * result + region.hashCode();
+        result = 31 * result + country.hashCode();
+        result = 31 * result + Double.valueOf(parkingFee).hashCode();
+        return result;
     }
     public String show()
     {

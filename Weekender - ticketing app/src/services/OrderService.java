@@ -1,20 +1,37 @@
 package services;
 
 import entities.*;
+import services.IO.Audit;
+import services.IO.OrderIOService;
+import services.IO.TicketIOService;
 import util.MyException;
+import util.PermissionDenied;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class OrderService {
 
     private List<Order> orders;
     private static OrderService orderService;
     private OrderService(){
-        orders = new ArrayList<Order>();
+        orders = OrderIOService.getOrderIOService().load();
+        for(Order o : orders)
+        {
+            Client client = o.getClient();
+            List<Order> clientOrders = client.getOrders();
+            clientOrders.add(o);
+            client.setOrders(clientOrders);
+        }
+    }
+    public void close()
+    {
+        TicketIOService.getTicketIOService().save(orders.stream()
+                .flatMap(i -> i.getTickets().stream()).collect(Collectors.toList()));
+        OrderIOService.getOrderIOService().save(orders);
     }
     public static OrderService getOrderService()
     {
@@ -24,6 +41,7 @@ public class OrderService {
     }
     public void showOrders()
     {
+        Audit.getAudit().addAction("showOrders");
         System.out.println();
         System.out.println("THE ORDERS ARE: ");
         for (Order order : orders)
@@ -33,6 +51,7 @@ public class OrderService {
     public void addOrder(User user, Order order) throws MyException
     {
 
+        Audit.getAudit().addAction("addOrder");
         if(user instanceof Client) {
             Client client = (Client) user;
 
@@ -45,11 +64,12 @@ public class OrderService {
             client.setOrders(clientOrders);
         }
         else
-            throw new MyException("Permission denied.");
+            throw new PermissionDenied();
     }
 
     public Order getOrder(int id)
     {
+
         for (Order order : orders)
             if (order.getId() == id)
                 return order;
@@ -71,7 +91,7 @@ public class OrderService {
     }
     public void changeTicket(User user, int id, Ticket newTicket) throws MyException
     {
-
+        Audit.getAudit().addAction("changeTicket");
         try {
 
             if(user instanceof Client) {
@@ -105,7 +125,7 @@ public class OrderService {
                     throw new MyException("The ticket doesn't exist.");
             }
             else
-                throw new MyException("Permission denied.");
+                throw new PermissionDenied();
         }
         catch(MyException e)
         {
@@ -114,6 +134,7 @@ public class OrderService {
     }
     public void deleteTicket(int ticketId, int orderId, User user) throws MyException
     {
+        Audit.getAudit().addAction("deleteTicket");
         try {
             if(user instanceof Client) {
                 Client client = (Client) user;
@@ -121,9 +142,10 @@ public class OrderService {
                 if (existingOrder == null)
                     throw new MyException("The order doesn't exist");
                 if (!existingOrder.getClient().equals(client))
-                    throw new MyException("Permission denied.");
+                    throw new PermissionDenied();
 
                 Ticket existingTicket = getTicket(orderId, ticketId);
+                UserService userService = UserService.getUserService();
                 if (existingTicket == null)
                     throw new MyException("The ticket doesn't exist.");
 
@@ -133,12 +155,29 @@ public class OrderService {
                 }
             }
             else
-                throw new MyException("Permission denied.");
+                throw new PermissionDenied();
         }
         catch(MyException e)
         {
             throw e;
         }
     }
-
+    public Set<Order> getOrdersWithinPriceRange(Double low, Double high)
+    {
+        return orders.stream()
+                .filter(i -> low <= i.getTotalPrice() &&  i.getTotalPrice() <= high)
+                .collect(Collectors.toSet());
+    }
+    public HashMap<Double, Set<Order>> getOrdersbyPriceRange()
+    {
+        Audit.getAudit().addAction("getOrdersbyPriceRange");
+        HashMap<Double, Set<Order>> map =  new HashMap<>();
+        Double firstLevel = 100.0;
+        Double secondLevel = 140.0;
+        Double thirdLevel = 400.0;
+        map.put(firstLevel, getOrdersWithinPriceRange(0.0,firstLevel));
+        map.put(secondLevel,getOrdersWithinPriceRange(firstLevel + 1, secondLevel));
+        map.put(thirdLevel,getOrdersWithinPriceRange(secondLevel + 1, thirdLevel));
+        return map;
+    }
 }

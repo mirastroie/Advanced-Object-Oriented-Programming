@@ -6,6 +6,7 @@ public abstract class Ticket {
 
     private final int id;
     private static int count = 0;
+    private static int max = 1;
     private int section;
     private char row;
     private int seatNo;
@@ -13,23 +14,34 @@ public abstract class Ticket {
     private Event event;
     protected TicketStatus status;
 
-    public abstract double price();
     {
         count ++;
     }
+    public abstract double price();
     public Ticket()
     {
-        this.id = count;
+        this.id = max ++;
         this.status = TicketStatus.AVAILABLE;
     }
     public Ticket(int section, char row, int seatNo, RefundPolicy refundPolicy, Event event)
+    {
+        this.id = max ++;
+        this.section = section;
+        this.row = row;
+        this.seatNo = seatNo;
+        this.refundPolicy = refundPolicy;
+        this.event = event;
+        this.status = TicketStatus.AVAILABLE;
+    }
+    public Ticket(int id,int section, char row, int seatNo, RefundPolicy refundPolicy, Event event)
     {
         this.section = section;
         this.row = row;
         this.seatNo = seatNo;
         this.refundPolicy = refundPolicy;
         this.event = event;
-        this.id = count;
+        this.id = id;
+        max = Math.max(max,id) + 1;
         this.status = TicketStatus.AVAILABLE;
     }
     public void setStatus(TicketStatus status)
@@ -100,10 +112,13 @@ public abstract class Ticket {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return id == ticket.id;
+        return section == ticket.section && row == ticket.row
+                && seatNo == ticket.seatNo && refundPolicy == ticket.refundPolicy
+                && Objects.equals(event, ticket.event) && status == ticket.status;
     }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(section,row,seatNo,refundPolicy,event,status);
     }
 }

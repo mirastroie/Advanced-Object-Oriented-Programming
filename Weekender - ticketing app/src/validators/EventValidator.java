@@ -23,14 +23,6 @@ public class EventValidator {
         return result.toString();
 
     }
-    public boolean validateEventName(Event event)
-    {
-        // numele unui eveniment incepe cu litera mare
-        // trebuie sa contina cel putin 3 litere mici
-        // poate contine spatii si cifre
-        String regex = "[A-Z]\\s*([A-Z]*[a-z]{3,}\\s*[0-9]*)*";
-        return event.getName().matches(regex);
-    }
     public boolean validateCapacityEvent(Event event)
     {
         return event.getAvailableSeats() <= event.getVenue().getCapacity();
