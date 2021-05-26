@@ -1,7 +1,5 @@
 package util;
 
-import entities.Ticket;
-
 import java.util.Comparator;
 import entities.Event;
 

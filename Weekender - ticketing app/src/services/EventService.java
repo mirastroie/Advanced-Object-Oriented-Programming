@@ -2,6 +2,7 @@ package services;
 import entities.*;
 import services.IO.Audit;
 import services.IO.EventIOService;
+import util.AlreadyAdded;
 import util.MyException;
 import util.PermissionDenied;
 import validators.EventValidator;
@@ -23,7 +24,7 @@ public class EventService {
     private static EventService eventService;
     private EventService(){
         events = EventIOService.getEventIOService().load();
-        System.out.println(events);
+        //System.out.println(events);
         for(Event event: events)
         {
             if(event.getOrganizer() != null)
@@ -69,7 +70,7 @@ public class EventService {
                 if (errors.length() > 0)
                     throw new MyException(errors);
                 if (events.contains(event))
-                    throw new MyException("The event is already added!");
+                    throw new AlreadyAdded("event");
 
                 event.setOrganizer(organizer);
                 //daca agajatii nu sunt deja adaugati in EmployeeService, ii adaugam

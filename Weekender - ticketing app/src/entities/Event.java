@@ -2,10 +2,9 @@ package entities;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Event {
-    private final Integer id;
+    private Integer id;
     private String name;
     private static Integer max = 1;
     private LocalDateTime startTime;
@@ -20,30 +19,14 @@ public class Event {
 
     public Event(String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
                  double basePrice, Venue venue, List<Employee> lineup, Organizer organizer) {
-        this.id =  max ++;
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
-        this.availableSeats = availableSeats;
-        this.basePrice = basePrice;
-        this.venue = venue;
-        this.lineup = lineup;
+        this(name,startTime,endTime,description,availableSeats,basePrice,venue,lineup);
         this.organizer = organizer;
     }
     public Event(Integer id, String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
                  double basePrice, Venue venue, List<Employee> lineup, Organizer organizer) {
+        this(name,startTime,endTime,description,availableSeats,basePrice,venue,lineup,organizer);
         this.id = id;
-        max = Math.max(max,id) + 1;
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
-        this.availableSeats = availableSeats;
-        this.basePrice = basePrice;
-        this.venue = venue;
-        this.lineup = lineup;
-        this.organizer = organizer;
+        max = Math.max(max - 1,id) + 1;
     }
     public Event(String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
                  double basePrice, Venue venue, List<Employee> lineup) {
@@ -61,15 +44,7 @@ public class Event {
 
     public Event(String name, LocalDateTime startTime, LocalDateTime endTime, String description, int availableSeats,
                  double basePrice, Venue venue) {
-        this.id = max ++ ;
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
-        this.availableSeats = availableSeats;
-        this.basePrice = basePrice;
-        this.lineup = new ArrayList<Employee>();
-        this.venue = venue;
+        this(name,startTime,endTime,description,availableSeats,basePrice, venue, new ArrayList<Employee>());
     }
 
     public Integer getId() {

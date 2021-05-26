@@ -2,7 +2,7 @@ package entities;
 import java.util.Objects;
 
 public class Employee implements Comparable<Employee>,Cloneable {
-    private final int id;
+    private int id;
     private static int max = 1;
     private static int nrEmployees;
     protected String description;
@@ -23,12 +23,9 @@ public class Employee implements Comparable<Employee>,Cloneable {
     }
     public Employee(Integer id, String description, String occupation, String firstName, String lastName)
     {
+        this(description,occupation,firstName,lastName);
         this.id = id;
-        max = Math.max(id,max) + 1;
-        this.description = description;
-        this.occupation = occupation;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        max = Math.max(id,max - 1) + 1;
     }
 
     public int getId() {

@@ -3,18 +3,17 @@ import entities.*;
 import services.IO.Audit;
 import services.IO.ClientIOService;
 import services.IO.OrganizerIOService;
-import util.Auth;
-import util.EventSorterAscByStartDate;
+import util.*;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import util.MyException;
-import util.PermissionDenied;
+
 import validators.UserValidator;
 
 public class UserService implements Auth {
-    List<User> users;
-    User currentUser;
+    protected List<User> users;
+    protected User currentUser;
     private static UserService userService;
     private UserService(){
         users = new ArrayList<>();
@@ -95,10 +94,10 @@ public class UserService implements Auth {
                 throw new MyException("The registration can't be completed:  " + errors);
             }
             if (users.contains(user))
-                throw new MyException("The user is already registered!");
+                throw new AlreadyRegisteredUser();
             for (User value : users) {
                 if (user.getEmail().equals(value.getEmail()))
-                    throw new MyException("Two users can't have the same email address.");
+                    throw new UniqueUserEmails();
             }
             users.add(user);
             System.out.println("You were successfully registered as a/an " + user.getClass().getName() + "! Welcome "

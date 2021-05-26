@@ -19,6 +19,7 @@ public class Client extends User {
         this.phoneNumber = phoneNumber;
         orders = new ArrayList<>();
     }
+
     public Client(String username, String email, String fullname, String password)
     {
         super(username,fullname,email, password);

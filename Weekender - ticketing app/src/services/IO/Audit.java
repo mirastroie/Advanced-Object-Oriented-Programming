@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Audit {
     private static Audit service;
-    final static String FILE_NAME = "data/audit.csv";
+    protected final static String FILE_NAME = "data/audit.csv";
 
     public static Audit getAudit() {
         if (service == null)

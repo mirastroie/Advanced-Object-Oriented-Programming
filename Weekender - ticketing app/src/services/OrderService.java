@@ -5,6 +5,7 @@ import services.IO.Audit;
 import services.IO.OrderIOService;
 import services.IO.TicketIOService;
 import util.MyException;
+import util.NotFound;
 import util.PermissionDenied;
 
 import java.time.LocalDateTime;
@@ -79,7 +80,7 @@ public class OrderService {
     {
         Order order = getOrder(orderId);
         if(order == null)
-            throw new MyException("The order doesn't exist.");
+            throw new NotFound("order");
         boolean found = false;
         for(Ticket ticket: order.getTickets())
             if(ticket.getId() == ticketId)
@@ -122,7 +123,7 @@ public class OrderService {
                     }
                 }
                 if (order == null)
-                    throw new MyException("The ticket doesn't exist.");
+                    throw new NotFound("ticket");
             }
             else
                 throw new PermissionDenied();
@@ -140,14 +141,14 @@ public class OrderService {
                 Client client = (Client) user;
                 Order existingOrder = getOrder(orderId);
                 if (existingOrder == null)
-                    throw new MyException("The order doesn't exist");
+                    throw new NotFound("order");
                 if (!existingOrder.getClient().equals(client))
                     throw new PermissionDenied();
 
                 Ticket existingTicket = getTicket(orderId, ticketId);
                 UserService userService = UserService.getUserService();
                 if (existingTicket == null)
-                    throw new MyException("The ticket doesn't exist.");
+                    throw new NotFound("ticket");
 
                 existingTicket.setStatus(TicketStatus.CANCELLED);
                 if (existingTicket.getRefundPolicy() == RefundPolicy.ThirtyDaysCancellation) {

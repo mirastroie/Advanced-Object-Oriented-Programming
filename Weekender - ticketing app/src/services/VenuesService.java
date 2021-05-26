@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import services.IO.Audit;
 import services.IO.VenuesIOService;
+import util.AlreadyAdded;
 import util.MyException;
 import entities.Venue;
 import validators.VenueValidator;
@@ -56,7 +57,7 @@ public class VenuesService {
             if(!venues.contains(venue))
                   venues.addFirst(venue);
             else
-                throw new MyException("Venue already added!");
+                throw new AlreadyAdded("venue");
         }catch(MyException e)
         {
             System.out.println("The venue could not be added: " + e);

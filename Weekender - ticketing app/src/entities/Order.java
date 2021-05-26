@@ -1,6 +1,5 @@
 package entities;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,24 +34,10 @@ public class Order {
     }
     public Order(Integer id, LocalDateTime datePurchased, List<Ticket> tickets, Client client)
     {
-        nrOrders ++;
+        this(datePurchased,tickets);
         this.id = id;
-        max = Math.max(id,max) + 1;
-        this.datePurchased = datePurchased;
-        this.tickets = tickets;
+        max = Math.max(id,max - 1) + 1;
         this.client = client;
-        computePrice();
-
-    }
-    public Order(LocalDateTime datePurchased, List<Ticket> tickets, Client client, int creditCardId)
-    {
-        nrOrders ++;
-        this.id = max ++;
-        this.datePurchased = datePurchased;
-        this.tickets = tickets;
-        this.client = client;
-        this.CreditCardId = creditCardId;
-        computePrice();
 
     }
     public void setClient(Client client)

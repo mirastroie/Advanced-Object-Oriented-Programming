@@ -3,9 +3,9 @@ package entities;
 import java.util.Objects;
 
 public abstract class User {
-    static int nrUsers;
+    private static int nrUsers;
     private static int max = 1;
-    private final int id;
+    private int id;
     protected String username;
     protected String fullname;
     protected String email;
@@ -20,13 +20,9 @@ public abstract class User {
         this.password = password;
     }
     public User(Integer id, String username, String fullname, String email, String password){
-        nrUsers ++;
+        this(username,fullname,email,password);
         this.id = id;
-        max = Math.max(id,max) + 1;
-        this.username = username;
-        this.fullname = fullname;
-        this.email = email;
-        this.password = password;
+        max = Math.max(id,max - 1) + 1;
     }
 
     public int getId() {

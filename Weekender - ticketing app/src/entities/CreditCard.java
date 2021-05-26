@@ -19,14 +19,6 @@ public class CreditCard {
         this.expirationYear = expirationYear;
         this.cardHolder = cardHolder;
     }
-    public CreditCard(CardType cardType, String PAN, String expirationMonth, String expirationYear, String cardHolder) {
-        this.CardId = max ++;
-        this.cardType = cardType;
-        this.PAN = PAN;
-        this.expirationMonth = expirationMonth;
-        this.expirationYear = expirationYear;
-        this.cardHolder = cardHolder;
-    }
 
     public int getCardId() {
         return CardId;

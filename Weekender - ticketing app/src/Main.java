@@ -87,6 +87,7 @@ public class Main {
                 if(userService.getCurrentUser() instanceof Organizer)
                 {
                     Organizer currentOrganizer = (Organizer) userService.getCurrentUser();
+                    System.out.println("Evenimentele organizate de tine sunt: ");
                     System.out.println(currentOrganizer.getEvents());
                 }
 
@@ -123,7 +124,7 @@ public class Main {
                 firstOrderTickets.add(firstTicket);
                 Order firstOrder = new Order(LocalDateTime.now(), firstOrderTickets);
                 orderService.addOrder(userService.getCurrentUser(), firstOrder);
-                System.out.println("Id-ul user-ului cureent este " + userService.getCurrentUser().getId());
+                System.out.println("Id-ul user-ului curent este " + userService.getCurrentUser().getId());
                 List<Ticket> secondOrderTickets = new ArrayList<>();
                 secondOrderTickets.add(new Premium(3, 'K', 55, RefundPolicy.NoRefund,
                         eventService.getEventById(2)));
@@ -215,7 +216,7 @@ public class Main {
             System.out.println(e.toString());
 
         }finally {
-            closeServices();
+           //closeServices();
         }
     }
 }

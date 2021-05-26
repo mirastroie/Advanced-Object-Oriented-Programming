@@ -17,17 +17,10 @@ public class Venue {
 
     public Venue(Integer id, String name, String description, int capacity, String address, String region, String ZIP, String country, double parkingFee)
     {
-        nrVenues ++;
+        this(name,description,capacity,address,region,ZIP,country,parkingFee);
         this.id = id;
-        max = Math.max(id,max) + 1;
-        this.name = name;
-        this.description = description;
-        this.capacity = capacity;
-        this.address = address;
-        this.ZIP = ZIP;
-        this.region = region;
-        this.country = country;
-        this.parkingFee = parkingFee;
+        max = Math.max(id,max - 1) + 1;
+
     }
     public Venue(String name, String description, int capacity, String address, String region, String ZIP, String country, double parkingFee)
     {

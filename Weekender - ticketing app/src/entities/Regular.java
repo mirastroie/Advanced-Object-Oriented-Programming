@@ -10,6 +10,10 @@ public class Regular extends Ticket {
     {
         super(id,section,row,seatNo,refundPolicy,event);
     }
+    public Regular(int id, int section, char row, int seatNo, RefundPolicy refundPolicy, Event event, TicketStatus status)
+    {
+        super(id,section,row,seatNo,refundPolicy,event,status);
+    }
     public double price()
     {
         return getEvent().getBasePrice();

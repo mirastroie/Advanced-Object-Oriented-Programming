@@ -2,7 +2,11 @@ package entities;
 
 public class Premium extends Ticket {
 
-    static final int commission = 20;
+    private static final int commission = 20;
+    public Premium(int id, int section, char row, int seatNo, RefundPolicy refundPolicy, Event event, TicketStatus status)
+    {
+        super(id,section,row,seatNo,refundPolicy, event, status);
+    }
     public Premium(int id, int section, char row, int seatNo, RefundPolicy refundPolicy, Event event)
     {
         super(id,section,row,seatNo,refundPolicy, event);

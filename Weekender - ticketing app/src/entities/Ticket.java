@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public abstract class Ticket {
 
-    private final int id;
+    private int id;
     private static int count = 0;
     private static int max = 1;
     private int section;
@@ -25,24 +25,24 @@ public abstract class Ticket {
     }
     public Ticket(int section, char row, int seatNo, RefundPolicy refundPolicy, Event event)
     {
-        this.id = max ++;
+        this();
         this.section = section;
         this.row = row;
         this.seatNo = seatNo;
         this.refundPolicy = refundPolicy;
         this.event = event;
-        this.status = TicketStatus.AVAILABLE;
+
     }
     public Ticket(int id,int section, char row, int seatNo, RefundPolicy refundPolicy, Event event)
     {
-        this.section = section;
-        this.row = row;
-        this.seatNo = seatNo;
-        this.refundPolicy = refundPolicy;
-        this.event = event;
+        this(section,row,seatNo,refundPolicy,event);
         this.id = id;
-        max = Math.max(max,id) + 1;
-        this.status = TicketStatus.AVAILABLE;
+        max = Math.max(max - 1,id) + 1;
+    }
+    public Ticket(int id,int section, char row, int seatNo, RefundPolicy refundPolicy, Event event, TicketStatus status)
+    {
+        this(id,section,row,seatNo,refundPolicy,event);
+        this.status = status;
     }
     public void setStatus(TicketStatus status)
     {

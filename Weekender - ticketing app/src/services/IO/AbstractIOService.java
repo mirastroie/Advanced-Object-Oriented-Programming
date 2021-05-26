@@ -18,7 +18,7 @@ public abstract class AbstractIOService<T> {
                         .stream()
                         .map(elem -> elem.replaceAll("\"", "").trim())
                         .collect(Collectors.toList());
-                System.out.println(value);
+                //System.out.println(value);
                 entities.add(parse(value));
             }
         } catch (IOException e) {
