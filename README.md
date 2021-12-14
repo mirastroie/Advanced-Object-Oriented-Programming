@@ -1,5 +1,4 @@
-# Programare_avansata_pe_Obiecte
-
+# Advanced-Object-Oriented-Programming
 
 
 #### Weekender - ticketing app
