@@ -1,7 +1,4 @@
-# Advanced-Object-Oriented-Programming
-
-
-#### Weekender - ticketing app
+### Weekender - ticketing app
 
 Classes:
 - [x] abstract class User
